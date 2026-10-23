@@ -1,0 +1,414 @@
+<title>ePRIS 처방검토 시안</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 좌측 태블릿 기기 프레임(실제 dp 크기를 축소 표시) + 우측 결정·레퍼런스 주석 */
+:root{
+  --bg:#eef1ef; --panel:#ffffff; --ink:#1d2321; --ink-2:#56605c; --line:#d9dfdc; --accent:#0f766e; --accent-soft:#e3f1ef;
+  --ui:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#111514;--panel:#1a1f1e;--ink:#e7ecea;--ink-2:#a3aeaa;--line:#2c3432;--accent:#5cc3b6;--accent-soft:#1d3532;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111514;--panel:#1a1f1e;--ink:#e7ecea;--ink-2:#a3aeaa;--line:#2c3432;--accent:#5cc3b6;--accent-soft:#1d3532;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.page{max-width:1500px;margin:0 auto;display:grid;gap:16px}
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between}
+h1{font-size:24px;margin:0;font-weight:700;text-wrap:balance}
+.sub{color:var(--ink-2);margin:4px 0 0}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:8px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+@media (max-width:1000px){.stage{grid-template-columns:minmax(0,1fr)}}
+.devwrap{min-width:0;position:relative}
+.devscale{transform-origin:top left;position:absolute;left:0;top:0}
+.notes{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:14px;min-width:0}
+.notes h2{font-size:16px;margin:0}
+.notes h3{font-size:12px;margin:0;color:var(--ink-2);letter-spacing:.06em;font-family:var(--mono);font-weight:500}
+.notes ul{margin:0;padding-left:18px;display:grid;gap:6px}
+.notes li b{font-weight:600}
+.ref{font-family:var(--mono);font-size:11px;color:var(--accent);white-space:nowrap}
+.try{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:13px}
+.demo{display:flex;flex-wrap:wrap;gap:6px}
+.demo button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 10px;border-radius:6px;cursor:pointer}
+.foot{font-size:12px;color:var(--ink-2)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ===== 기기 화면: 실제 앱은 라이트 고정 (m6 v2 토큰) ===== */
+.device{background:#ffffff;color:#222222;border-radius:18px;box-shadow:0 0 0 10px #1f2422,0 18px 40px rgba(0,0,0,.25);overflow:hidden;position:relative;display:flex;flex-direction:column;font-family:var(--ui);font-size:14px;line-height:1.35}
+.device *{box-sizing:border-box}
+.status{height:24px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 16px;font-size:12px;color:#555555;background:#fafbfa}
+.appbar{height:56px;flex:none;display:flex;align-items:center;gap:12px;padding:0 16px;border-bottom:1px solid #e3e7e5;background:#fafbfa}
+.appbar .back{font-size:22px;color:#222;cursor:pointer;background:none;border:0;padding:4px 8px}
+.appbar .ttl{font-size:18px;font-weight:700}
+.appbar .ctx{font-size:14px;color:#555555;display:flex;align-items:center;gap:4px}
+.appbar .sp{flex:1}
+.search{width:200px;height:36px;border:1px solid #d6dbd8;border-radius:8px;display:flex;align-items:center;padding:0 10px;color:#767676;font-size:13px}
+.iconbtn{width:40px;height:40px;border:1px solid #d6dbd8;border-radius:8px;display:grid;place-items:center;background:#fff;position:relative}
+.iconbtn .live{position:absolute;right:5px;top:5px;width:7px;height:7px;border-radius:50%;background:#0f766e}
+.chips{height:48px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;border-bottom:1px solid #e3e7e5;background:#fff;overflow-x:auto}
+.chip{height:32px;flex:none;border:1px solid #c9cfcc;border-radius:16px;padding:0 12px;display:inline-flex;align-items:center;gap:6px;font-size:13px;background:#fff;color:#222;white-space:nowrap}
+.chip.on{background:#222222;color:#fff;border-color:#222}
+.chip .cnt{font-family:var(--mono);font-weight:600}
+.chip.urgent{cursor:pointer}
+.range{height:32px;flex:none;display:flex;align-items:center;gap:10px;padding:0 16px;font-size:12px;color:#555555;background:#fafbfa;border-bottom:1px solid #e3e7e5;font-variant-numeric:tabular-nums}
+.range b{color:#222;font-weight:600}
+.body{flex:1;overflow-y:auto;position:relative}
+
+/* PatientHeader (PH) */
+.ph{position:sticky;top:0;z-index:5;background:#f4f6f5;border-bottom:1px solid #dfe4e1;border-top:1px solid #dfe4e1;padding:0 16px;display:grid;grid-template-rows:32px 28px;row-gap:0;align-items:center}
+.ph.expanded{grid-template-rows:32px 28px auto;padding-bottom:8px}
+.ph .l1{display:flex;align-items:center;gap:10px;min-width:0;white-space:nowrap}
+.ph .nm{font-size:16px;font-weight:700}
+.ph .id{font-family:var(--mono);font-size:12px;color:#555}
+.ph .meta{font-size:12px;color:#555;overflow:hidden;text-overflow:ellipsis}
+.ph .right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.ph .l2{display:flex;gap:14px;font-size:13px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
+.ph .l2 span em{font-style:normal;color:#555;font-size:12px;margin-right:4px}
+.ph .l2 small{color:#767676;font-size:11px;margin-left:3px}
+.ph .l3{font-size:12px;color:#555;display:grid;gap:2px;padding-top:4px}
+.roll{height:22px;font-size:11px;font-weight:700;padding:0 8px;border-radius:4px;display:inline-flex;align-items:center;color:#fff}
+.roll.alert{background:#b42318}.roll.order{background:#a15c00}.roll.hd{background:#6941c6}.roll.done{background:#fff;color:#2b5c8c;border:1px solid #2b5c8c}
+.prog{font-family:var(--mono);font-size:12px;color:#2b5c8c;font-weight:500}
+.rxbtn{height:32px;border:1px solid #222;border-radius:6px;background:#fff;font:inherit;font-size:13px;font-weight:600;padding:0 10px;cursor:pointer}
+
+/* 처방 테이블 */
+.hs{overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
+.grid{display:grid;grid-template-columns:var(--cols);align-items:center;width:max-content;min-width:100%}
+.colhead{height:40px;font-size:12px;color:#555;background:#fafbfa;border-bottom:1px solid #e3e7e5}
+.colhead>div{padding:0 6px;white-space:nowrap}
+.rx{--rowbg:#ffffff;background:var(--rowbg);border-bottom:1px solid #eceeed;position:relative}
+.rx .g{height:48px}
+.rx .g>div{padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stk{position:sticky;background:var(--rowbg);z-index:2}
+.colhead .stk{background:#fafbfa}
+.c-bar{left:0;padding:0!important;align-self:stretch;height:100%}
+.c-ck{left:8px}
+.c-dc{left:84px}
+.c-code{left:180px;font-family:var(--mono);font-size:12px;color:#555;border-right:1px solid #e3e7e5}
+.ckcell{display:flex;align-items:center;gap:6px}
+.box{width:24px;height:24px;border:2px solid #767676;border-radius:5px;background:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.box.on{background:#0f766e;border-color:#0f766e}
+.box.on::after{content:"";width:10px;height:6px;border:2.5px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.box.dis{border-style:dashed;cursor:not-allowed;background:transparent}
+.box.ro{visibility:hidden}
+.wf{font-size:11px;font-weight:700;height:22px;min-width:26px;padding:0 4px;border-radius:4px;display:inline-grid;place-items:center}
+.wf.review{color:#2b5c8c;border:1.5px solid #2b5c8c}
+.wf.audit{color:#fff;background:#2b5c8c}
+.wf.hd{color:#fff;background:#6941c6}
+.wf.bid{color:#2b5c8c;border:1.5px dashed #2b5c8c}
+.od{font-size:11px;font-weight:700;height:22px;padding:0 6px;border-radius:4px;display:inline-grid;place-items:center;color:#fff;background:#a15c00}
+.od.post{background:#b42318}
+.nmcell{font-size:14px;font-weight:600}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+.tot{font-weight:600}
+.who{font-size:12px;color:#555}
+.memo{font-size:16px;color:#2b5c8c;text-align:center}
+.memo.none{color:#c9cfcc}
+.doseline{position:sticky;left:240px;width:520px;font-size:12px;color:#2b5c8c;padding:0 6px 6px;margin-top:-6px;white-space:normal;line-height:1.3}
+.doseline b{font-weight:600}
+.rx.sel{box-shadow:inset 0 0 0 2px #0f766e}
+.rx.sel .stk{box-shadow:inset 0 2px 0 #0f766e,inset 0 -2px 0 #0f766e}
+.rx.sel .c-bar{box-shadow:inset 2px 2px 0 #0f766e,inset 0 -2px 0 #0f766e}
+.rx.ro .nmcell{font-weight:500}
+.section{padding:10px 16px 6px;font-size:13px;font-weight:700;display:flex;gap:8px;align-items:center;background:#fff}
+.section .tag{font-size:11px;font-weight:600;color:#555;border:1px solid #c9cfcc;border-radius:4px;padding:1px 6px}
+.metric{padding:0 16px 8px;font-size:12px;color:#222;display:flex;flex-wrap:wrap;gap:4px 14px;font-variant-numeric:tabular-nums}
+.metric em{font-style:normal;color:#555;margin-right:4px}
+
+/* 하단 조작 영역 (S3) */
+.bar{flex:none;min-height:64px;border-top:1px solid #dfe4e1;background:#f7f8f7;display:flex;align-items:center;gap:10px;padding:10px 16px;flex-wrap:wrap}
+.bar .all{display:flex;align-items:center;gap:8px;font-size:13px}
+.bar .count{font-weight:700;font-variant-numeric:tabular-nums}
+.warnchip{font-size:12px;font-weight:700;color:#a15c00;border:1.5px solid #a15c00;border-radius:6px;padding:3px 8px;background:#fff}
+.bar .sp{flex:1}
+.vsep{width:1px;height:32px;background:#d6dbd8;margin:0 6px}
+.btn{height:44px;min-width:96px;padding:0 16px;border-radius:8px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;border:1.5px solid #c9cfcc;background:#fff;color:#222}
+.btn.audit{background:#2b5c8c;border-color:#2b5c8c;color:#fff}
+.btn.audit:disabled{background:#c9d4df;border-color:#c9d4df;cursor:not-allowed}
+.btn.review{border-color:#2b5c8c;color:#2b5c8c}
+.btn.hd{border-color:#6941c6;color:#6941c6}
+.btn.ghost{color:#555}
+.btn:disabled{cursor:not-allowed;opacity:.6}
+
+/* 토스트·확인창 */
+.toast{position:absolute;left:50%;transform:translateX(-50%);bottom:84px;background:#222;color:#fff;border-radius:10px;padding:10px 12px 10px 16px;display:flex;gap:14px;align-items:center;font-size:14px;z-index:30;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+.toast button{font:inherit;font-weight:700;color:#9fe0d6;background:none;border:0;cursor:pointer;padding:6px 8px}
+.scrim{position:absolute;inset:0;background:rgba(20,24,23,.45);display:grid;place-items:center;z-index:40}
+.dialog{width:440px;background:#fff;border-radius:14px;padding:22px;display:grid;gap:12px}
+.dialog h4{margin:0;font-size:18px}
+.dialog p{margin:0;color:#444;font-size:14px}
+.dialog .rows{font-size:13px;background:#f9e0d9;border-left:4px solid #a15c00;padding:8px 10px;border-radius:4px}
+.dialog .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
+/* S4 긴급 큐 */
+.split{flex:1;display:grid;grid-template-columns:320px 1px minmax(0,1fr);min-height:0}
+.split .div{background:#dfe4e1}
+.q{display:flex;flex-direction:column;min-height:0}
+.qprog{height:32px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:12px;color:#555;border-bottom:1px solid #e3e7e5;font-variant-numeric:tabular-nums}
+.qprog .left{font-size:16px;font-weight:700;color:#222}
+.qbar{height:4px;background:#e3e7e5;flex:none}
+.qbar i{display:block;height:100%;background:#2b5c8c}
+.qchips{height:44px;flex:none;display:flex;gap:6px;align-items:center;padding:0 12px;border-bottom:1px solid #e3e7e5}
+.qlist{flex:1;overflow-y:auto}
+.qi{height:56px;display:grid;grid-template-columns:62px 52px minmax(0,1fr) auto;gap:6px;align-items:center;padding:0 12px;border-bottom:1px solid #eceeed;cursor:pointer;font-size:13px;font-variant-numeric:tabular-nums;position:relative}
+.qi .t{font-family:var(--mono);font-size:12px}
+.qi .w{font-size:12px;color:#555}
+.qi .n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qi .n small{display:block;font-weight:400;color:#555;font-size:11px}
+.qi .age{font-size:11px;color:#555;text-align:right}
+.qi .new{font-size:10px;font-weight:700;color:#0f766e;border:1px solid #0f766e;border-radius:3px;padding:0 4px;margin-left:4px}
+.qi.cur{background:#f2f7f6;box-shadow:inset 3px 0 0 #0f766e}
+.qempty{padding:40px 20px;text-align:center;color:#555}
+.detail{display:flex;flex-direction:column;min-height:0}
+.detail .body{flex:1}
+.pager{display:flex;gap:6px;align-items:center;font-size:13px;color:#555}
+.pager button{width:40px;height:40px;border:1px solid #d6dbd8;border-radius:8px;background:#fff;font-size:18px;cursor:pointer}
+</style>
+
+<div class="page">
+  <div class="top">
+    <div>
+      <h1>ePRIS 처방검토 시안</h1>
+      <p class="sub">레퍼런스 기반 디벨롭 결과. 눌러서 직접 써 볼 수 있습니다. 환자 정보는 모두 가상입니다.</p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-s1" aria-selected="true" data-s="s1">S1 처방 목록</button>
+      <button role="tab" id="tab-s5" aria-selected="false" data-s="s5">S5 환자 처방전</button>
+      <button role="tab" id="tab-s4" aria-selected="false" data-s="s4">S4 긴급 큐</button>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="devwrap" id="devwrap"><div class="devscale" id="devscale"></div></div>
+    <aside class="notes" id="notes"></aside>
+  </div>
+  <p class="foot">기기 가정: 세로 800×1280dp(S1·S5), 가로 1280×800dp(S4). 화면은 실제 dp 크기로 그린 뒤 축소해 보여줍니다. 약사 검증 전 시안이며 모든 결정은 "검증 전" 상태입니다.</p>
+</div>
+
+<script>
+(function(){
+const now=()=>{const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+const ME='김약사';
+// ---------- 데이터 (가상) ----------
+const R=(code,name,dose,freq,sig,total,o={})=>Object.assign({code,name,dose,freq,sig,total,pat:'',prn:'',ins:'',medi:'',sun:'',recv:'정규',wf:'none',od:'none',post:false,who:'',memo:false,dl:null},o);
+const patients=[
+ {id:'p1',name:'박서연',reg:'20483971',ward:'41-B12',dept:'순환기내과',dr:'김정우',sex:'F/34',wt:'58 kg',scr:'0.82/98.4',scrd:'10-22',dx:'[O13] Gestational hypertension',iv:'LA',stay:'3/3',memo:'조제메모: 분쇄 금지 약 있음',
+  rows:[
+   R('AMO1','Amoxicillin 500 mg','1 cap',3,'tid pc','3 cap',{pat:'10-11-12',sun:'D'}),
+   R('SPI2','Spironolactone 25 mg','1 tab',1,'qd pc','1 tab',{wf:'review',who:'이약사',sun:'S'}),
+   R('MET1','Metformin 500 mg','2 tab',2,'bid ac','4 tab',{wf:'audit',who:'김약사 09:12',sun:'B'}),
+   R('FRS1','Furosemide 20 mg/2 mL','1 amp',1,'x1','1 amp',{od:'dc',recv:'추1'}),
+   R('IBP1','Ibuprofen/Arginine 400 mg','2 tab',3,'tid pc','6 tab',{od:'hold'}),
+   R('AAP6','Acetaminophen ER 650 mg','2 tab',3,'tid pc','6 tab',{wf:'hd',who:'이약사',memo:true}),
+   R('MGO2','MgO 250 mg','2 tab',3,'tid pc','6 tab',{wf:'audit',od:'dc',post:true,who:'김약사 08:40'}),
+   R('LIS1','Lisinopril 10 mg','1 tab',1,'qd','1 tab',{dl:'<b>용법 비교</b> 어제 5 mg qd → 오늘 10 mg qd · <b>CDSS</b> K 5.4 mmol/L (10-22) 확인 필요'})
+  ],
+  onco:{metric:[['키/체중/BSA','157.5 cm / 57.3 kg / 1.58'],['WBC/ANC','10.78 / 8,516','10-22'],['Scr/CrCl','0.72/73.8','10-22']],regimen:'FOLFOX6 · #4 2026-10-09 · #5 2026-10-23',
+   rows:[R('OXL1','Oxaliplatin 100 mg','100 mg',1,'MIV','1 via',{wf:'audit',who:'박약사 10:05'}),R('D5W2','Dextrose 5% 200 mL','200 mL',1,'MIV','1 bag',{wf:'audit',who:'박약사 10:05'}),R('FU10','Fluorouracil 1,000 mg','4,000 mg',1,'MIV','4 via',{wf:'review',who:'최약사'})]}
+ },
+ {id:'p2',name:'최민지',reg:'30597264',ward:'22-A07',dept:'내과(순환기)',dr:'박지훈',sex:'M/45',wt:'75 kg',scr:'1.42/52.1',scrd:'10-23',dx:'[I50.9] Heart failure',iv:'RA',stay:'1/10',memo:'',
+  rows:[
+   R('DIG1','Digoxin 0.125 mg','1 tab',1,'qd','1 tab',{dl:'<b>CDSS</b> CrCl 52 · 신기능 감량 기준 확인'}),
+   R('CAR1','Carvedilol 6.25 mg','1 tab',2,'bid pc','2 tab'),
+   R('ATV1','Atorvastatin 20 mg','1 tab',1,'qd hs','1 tab',{wf:'review',who:'이약사'}),
+   R('PAN1','Pantoprazole 40 mg','1 via',1,'MIV','1 via',{recv:'추1'})
+  ]},
+ {id:'p3',name:'이민호',reg:'20384756',ward:'41-B12',dept:'내분비내과',dr:'오세윤',sex:'M/62',wt:'81 kg',scr:'0.95/88.0',scrd:'10-21',dx:'[E11.9] Type 2 DM',iv:'-',stay:'2/5',memo:'',
+  rows:[
+   R('GLM1','Glimepiride 2 mg','1 tab',1,'qd ac','1 tab',{wf:'audit',who:'김약사 08:21'}),
+   R('LIN1','Linagliptin 5 mg','1 tab',1,'qd','1 tab',{wf:'audit',who:'김약사 08:21'}),
+   R('ASA1','Aspirin 100 mg','1 tab',1,'qd pc','1 tab',{wf:'audit',who:'김약사 08:21'})
+  ]}
+];
+let uid=0; patients.forEach(p=>{p.rows.forEach(r=>{r.id='r'+(++uid);r.pid=p.id}); if(p.onco)p.onco.rows.forEach(r=>{r.id='r'+(++uid);r.ro=true})});
+const allRows=()=>patients.flatMap(p=>p.rows);
+const byId=id=>allRows().find(r=>r.id===id);
+
+// 긴급 큐 (가상)
+const qNames=['정하늘','오지훈','한수아','윤도현','서지우','강민재','임서윤','조하준','신예린','배도윤','홍지아','문태오','류나은'];
+const qWards=['51병동','52병동','EICU','61병동','62병동','MICU','71병동','수술장','72병동','81병동','마취과','82병동','91병동'];
+let queue=qNames.map((n,i)=>{const h=13,m=49+i*3;const hh=h+Math.floor(m/60),mm=m%60;
+  return {id:'q'+i,t:`${hh}:${String(mm).padStart(2,'0')}`,ward:qWards[i],name:n,reg:String(24554633+i),age:Math.max(2,38-i*3),isNew:false,
+   rows:[R('PTP4','Pantoprazole 40 mg','1 via',1,'MIV','1 via',{recv:'긴급'}),R(i%3?'KCL2':'MOR1',i%3?'KCl 20 mEq/20 mL':'Morphine 5 mg/1 mL',i%3?'20 mEq':'2.5 mg',1,i%3?'MIV':'IV','1 amp',{recv:'긴급',od:i===4?'dc':'none'})]}});
+queue.forEach(q=>q.rows.forEach(r=>{r.id='r'+(++uid);r.pid=q.id}));
+const qState={done:287,total:300,cur:0,skipped:[],recent:[]};
+
+// ---------- 상태 ----------
+let screen='s1', s5pid='p1';
+const sel=new Set();
+let toast=null, toastTimer=null, dialog=null, undoFn=null;
+
+const selectable=r=>!r.ro && !(r.od==='hold'||r.od==='return'||r.post);
+const actionable=r=>selectable(r) && r.wf!=='audit';
+const rowBg=r=>r.post?'#f6d3d0':(r.od!=='none'?'#f9e0d9':(r.wf==='hd'?'#ece6f7':(r.wf==='audit'?'#e4edf6':'#ffffff')));
+const barCss=r=>r.post?'background:#b42318;width:8px':(r.od!=='none'?'background:#a15c00;width:4px':(r.wf==='hd'?'background:#6941c6;width:4px':''));
+const wfMark=r=>r.wf==='audit'?'<span class="wf audit" title="감사 완료">감</span>':r.wf==='review'?'<span class="wf review" title="검토 완료">검</span>':r.wf==='hd'?'<span class="wf hd" title="문의/HD">HD</span>':'';
+const odMark=r=>r.post?'<span class="od post">⚠ 감사 후 D/C</span>':r.od==='dc'?'<span class="od">D</span>':r.od==='hold'?'<span class="od">보</span>':r.od==='return'?'<span class="od">반납</span>':'';
+const COLS='8px 76px 96px 60px 210px 72px 44px 76px 72px 80px 44px 44px 64px 44px 52px 48px 112px';
+function colhead(){return `<div class="grid colhead" style="--cols:${COLS}"><div class="stk c-bar"></div><div class="stk c-ck">선택·처리</div><div class="stk c-dc">DC</div><div class="stk c-code">코드</div><div>약품명</div><div class="num">1회량</div><div class="num">횟수</div><div>용법</div><div class="num">총량</div><div>패턴</div><div>PRN</div><div>보험</div><div>Medispan</div><div>SUN</div><div>접수</div><div>메모</div><div>검토·감사</div></div>`}
+function rowHtml(r){
+  const box=r.ro?'<span class="box ro"></span>':selectable(r)?`<span class="box${sel.has(r.id)?' on':''}" data-ck="${r.id}" role="checkbox" aria-checked="${sel.has(r.id)}" tabindex="0"></span>`:'<span class="box dis" title="선택 불가: 보류·반납·감사 후 변경"></span>';
+  return `<div class="rx${sel.has(r.id)?' sel':''}${r.ro?' ro':''}" style="--rowbg:${rowBg(r)}">
+   <div class="grid g" style="--cols:${COLS}">
+    <div class="stk c-bar"><div style="height:100%;${barCss(r)}"></div></div>
+    <div class="stk c-ck"><div class="ckcell">${box}${wfMark(r)}</div></div>
+    <div class="stk c-dc">${odMark(r)}</div>
+    <div class="stk c-code">${r.code}</div>
+    <div class="nmcell" title="${r.name}">${r.name}</div><div class="num">${r.dose}</div><div class="num">${r.freq}</div><div>${r.sig}</div><div class="num tot">${r.total}</div>
+    <div class="who">${r.pat}</div><div>${r.prn}</div><div>${r.ins}</div><div>${r.medi}</div><div>${r.sun}</div><div class="who">${r.recv}</div>
+    <div class="memo${r.memo?'':' none'}">${r.memo?'✎':'·'}</div><div class="who">${r.who}</div>
+   </div>${r.dl?`<div class="doseline">${r.dl}</div>`:''}</div>`}
+function progress(rows){const mine=rows.filter(r=>!r.ro);const done=mine.filter(r=>r.wf==='audit'&&!r.post).length;return [done,mine.length]}
+function rollup(rows){const n=k=>rows.filter(k).length;
+  if(n(r=>r.post))return `<span class="roll alert">⚠ 확인 필요 ${n(r=>r.post)}</span>`;
+  if(n(r=>r.od==='dc'))return `<span class="roll order">D ${n(r=>r.od==='dc')}</span>`;
+  if(n(r=>r.od==='hold'))return `<span class="roll order">보 ${n(r=>r.od==='hold')}</span>`;
+  if(n(r=>r.wf==='hd'))return `<span class="roll hd">HD ${n(r=>r.wf==='hd')}</span>`;
+  const [d,t]=progress(rows); return d===t?'<span class="roll done">완료</span>':'';}
+function ph(p,opts={}){const [d,t]=progress(p.rows);
+  return `<div class="ph${opts.expanded?' expanded':''}">
+   <div class="l1"><span class="nm">${p.name}</span><span class="id">${p.reg}</span><span class="meta">${p.ward} · ${p.dept} · ${p.dr}</span>
+    <span class="right">${rollup(p.rows)}<span class="prog">감사 ${d}/${t}</span>${opts.rxbtn?`<button class="rxbtn" data-rx="${p.id}">처방전</button>`:''}</span></div>
+   <div class="l2"><span><em>성별/나이·체중</em>${p.sex} · ${p.wt}</span><span><em>Scr/CrCl</em>${p.scr}<small>${p.scrd}</small></span><span><em>진단</em>${p.dx}</span><span><em>IV</em>${p.iv}</span><span><em>전과/총재원</em>${p.stay}</span></div>
+   ${opts.expanded?`<div class="l3">${p.memo?`<span>${p.memo}</span>`:''}<span>입원조제 메모: -</span></div>`:''}
+  </div>`}
+function selInfo(rows){const s=rows.filter(r=>sel.has(r.id));return {s,dc:s.filter(r=>r.od==='dc').length,canUndo:s.filter(r=>r.wf==='audit'&&!r.post).length}}
+function actionBar(rows,opts={}){const {s,dc,canUndo}=selInfo(rows);const act=rows.filter(actionable);const allOn=act.length>0&&act.every(r=>sel.has(r.id));
+  return `<div class="bar">
+   <span class="all"><span class="box${allOn?' on':''}" data-all="1" role="checkbox" aria-checked="${allOn}" tabindex="0" title="처리 가능한 처방만 선택"></span>전체</span>
+   <span class="count">${s.length}건 선택</span>${dc?`<span class="warnchip">D/C 포함 ${dc}건</span>`:''}
+   <span class="sp"></span>
+   ${opts.extraLeft||''}
+   <button class="btn ghost" data-undo-save="1" ${canUndo?'':'disabled'}>저장취소</button><span class="vsep"></span>
+   ${opts.skip?'<button class="btn" data-skip="1">넘김</button>':''}
+   <button class="btn audit" data-audit="1" ${s.length?'':'disabled'}>${opts.label||'감사 저장'}</button>
+  </div>`}
+function overlays(){return (toast?`<div class="toast" role="status">${toast}${undoFn?'<button data-toast-undo="1">되돌리기</button>':''}</div>`:'')+(dialog||'')}
+function statusbar(){return `<div class="status"><span>${now()}</span><span>ePRIS · ${ME}</span></div>`}
+
+// ---------- 화면 ----------
+function S1(){const rows=allRows().filter(r=>patients.some(p=>p.id===r.pid));const und=rows.filter(r=>!(r.wf==='audit'&&!r.post)).length;
+  return `<div class="device" style="width:800px;height:1280px">${statusbar()}
+   <div class="appbar"><button class="back" aria-label="뒤로">‹</button><span class="ttl">입원조제</span><span class="ctx">정규 · 41병동 외 4 ▾</span><span class="sp"></span><span class="search">⌕ 환자번호로 검색</span><span class="iconbtn" title="바코드 스캐너 연결됨">▥<i class="live"></i></span></div>
+   <div class="chips"><span class="chip">접수 10/23 ▾</span><span class="chip">팀 전체 ▾</span><span class="chip">약품 전체 ▾</span><span class="chip on">감사 미완료</span><span class="chip">인수인계</span><span style="flex:1"></span><span class="chip urgent" data-go="s4">긴급 <span class="cnt">${queue.length}</span> ›</span></div>
+   <div class="range"><b>41 · 42B · 51 · 52 · 61병동</b><span>정규</span><span>환자 ${patients.length}</span><span>처방 ${rows.length}</span><span>미감사 <b>${und}</b></span></div>
+   <div class="body" id="scroller">${patients.map(p=>`${ph(p,{rxbtn:true})}<div class="hs" data-hs="1">${colhead()}${p.rows.map(rowHtml).join('')}</div>`).join('')}<div style="height:24px"></div></div>
+   ${actionBar(rows)}${overlays()}</div>`}
+function S5(){const p=patients.find(x=>x.id===s5pid);const idx=patients.indexOf(p);
+  return `<div class="device" style="width:800px;height:1280px">${statusbar()}
+   <div class="appbar"><button class="back" data-go="s1" aria-label="목록으로">‹</button><span class="ttl">처방전</span><span class="ctx">입원조제 · 정규</span><span class="sp"></span>
+    <span class="pager"><button data-pp="-1" ${idx===0?'disabled':''} aria-label="이전 환자">‹</button>${idx+1} / ${patients.length}<button data-pp="1" ${idx===patients.length-1?'disabled':''} aria-label="다음 환자">›</button></span></div>
+   <div class="body" id="scroller">${ph(p,{expanded:true})}
+    <div class="section">입원조제 · 정규/추가 <span class="tag">내 범위</span></div>
+    <div class="hs" data-hs="1">${colhead()}${p.rows.map(rowHtml).join('')}</div>
+    ${p.onco?`<div class="section" style="margin-top:12px">항암제조제2 <span class="tag">열람 전용</span></div>
+     <div class="metric">${p.onco.metric.map(m=>`<span><em>${m[0]}</em>${m[1]}${m[2]?` <small style="color:#767676">${m[2]}</small>`:''}</span>`).join('')}<span style="flex-basis:100%"><em>Regimen</em>${p.onco.regimen}</span></div>
+     <div class="hs" data-hs="1">${colhead()}${p.onco.rows.map(rowHtml).join('')}</div>`:`<div class="section" style="margin-top:12px;color:#555;font-weight:500">다른 약국 처방 없음</div>`}
+    <div style="height:24px"></div></div>
+   ${actionBar(p.rows,{label:idx<patients.length-1?'감사 저장 후 다음 ›':'감사 저장'})}${overlays()}</div>`}
+function S4(){const cur=queue[qState.cur];const pct=Math.round(qState.done/qState.total*100);
+  const detail=cur?(()=>{const p={name:cur.name,reg:cur.reg,ward:cur.ward,dept:'응급의학과',dr:'당직의',sex:'F/52',wt:'61 kg',scr:'0.91/80.2',scrd:'10-23',dx:'[R07.4] Chest pain',iv:'RA',stay:'1/1',rows:cur.rows};
+     return `${ph(p)}<div class="hs" data-hs="1">${colhead()}${cur.rows.map(rowHtml).join('')}</div>`})():`<div class="qempty"><b style="font-size:18px;color:#222">남은 긴급 처방이 없습니다</b><br>넘긴 처방 ${qState.skipped.length}건을 확인한 뒤 하루 마감 요약을 보세요.</div>`;
+  return `<div class="device" style="width:1280px;height:800px">${statusbar()}
+   <div class="appbar"><button class="back" data-go="s1" aria-label="정규 목록으로">‹</button><span class="ttl">입원조제 · 긴급</span><span class="ctx">32병동 외 4 ▾</span><span class="sp"></span>
+    <span class="chip on">감사 미완료</span><span class="chip">응급실일반</span><span class="chip">긴급일반</span><span class="chip">PRN/Dr.확인후</span><span class="chip">ADC</span><span class="chip">수술장·마취과 ▾</span><span class="search" style="width:180px">⌕ 환자번호</span></div>
+   <div class="split">
+    <div class="q">
+     <div class="qprog"><span class="left">남은 ${queue.length}</span><span>감사 ${qState.done}/${qState.total}</span><span>· 범위 밖 미감사 2</span></div>
+     <div class="qbar"><i style="width:${pct}%"></i></div>
+     <div class="qchips"><span class="chip">최근 완료 ${qState.recent.length}</span><span class="chip">넘김 ${qState.skipped.length}</span></div>
+     <div class="qlist">${queue.map((q,i)=>`<div class="qi${i===qState.cur?' cur':''}" data-qi="${i}"><span class="t">${q.t}</span><span class="w">${q.ward}</span><span class="n">${q.name}${q.isNew?'<span class="new">새</span>':''}<small>${q.reg} · 처방 ${q.rows.length}</small></span><span class="age">${q.age}분</span></div>`).join('')||'<div class="qempty">비어 있음</div>'}</div>
+    </div><div class="div"></div>
+    <div class="detail"><div class="body" id="scroller">${detail}</div>
+     ${cur?actionBar(cur.rows,{label:'감사 저장 → 다음',skip:true}):''}</div>
+   </div>${overlays()}</div>`}
+
+const NOTES={
+ s1:`<h2>S1 처방 목록</h2>
+  <h3>레퍼런스에서 가져온 것</h3><ul>
+  <li><b>고정 영역 240dp</b>: 상태 바·선택·DC·코드가 가로 스크롤 중에도 남는다. 화면 폭 30% 이하 <span class="ref">REF-301·302 Fiori</span></li>
+  <li><b>숫자 열 오른쪽 정렬 + 고정폭 숫자</b>, 용량은 숫자와 단위 사이 공백 <span class="ref">REF-401 Primer · REF-209 ISMP</span></li>
+  <li><b>환자 헤더 2줄 고정</b>: 접혀도 판단 수치(체중·Scr/CrCl, 검사일)가 남는다 <span class="ref">REF-213·214 NHS CUI</span></li>
+  <li><b>투여량·CDSS는 있는 행만 아래 줄로</b> (D3) <span class="ref">10/21 요구 · R-022</span></li>
+  <li><b>상태 위계</b>: 감사·검토는 톤다운, D/C·보류·HD는 막대+배지, 빨강은 감사 후 변경 전용 <span class="ref">m6 v2 · REF-109</span></li>
+  <li><b>하단 바</b>: 선택 수 상시, D/C 포함 경고, 저장취소는 구분선 뒤로 분리, 버튼 색 = 결과 상태 색 <span class="ref">REF-314 Spectrum · O7</span></li>
+  <li><b>긴급 진입</b>: 고정 칩 줄의 [긴급 n] <span class="ref">E1</span></li></ul>
+  <div class="try">해보기: 행 체크박스를 눌러 Furosemide(D)를 포함해 [감사 저장]을 눌러 보세요. 저장 전 확인창과 되돌리기 토스트가 나옵니다. 환자 헤더의 [처방전]은 S5로 이동합니다.</div>`,
+ s5:`<h2>S5 환자 처방전</h2>
+  <h3>레퍼런스에서 가져온 것</h3><ul>
+  <li><b>종이 처방전의 "환자 블록"</b>: 식별·판단 수치·메모를 상단에 펼쳐 둔다 <span class="ref">원안 종이 처방전 p.7·12·17</span></li>
+  <li><b>약국별 섹션</b>: 내 범위가 먼저, 다른 약국은 <b>열람 전용</b>(체크 불가, 처리 표지는 보임) <span class="ref">10/21 환자별 전체 처방 · C1</span></li>
+  <li><b>항암 수치와 Regimen을 팝업 대신 바로 보이기</b> <span class="ref">종이 V2 · R-042</span></li>
+  <li><b>이전/다음 + 감사 저장 후 다음</b> <span class="ref">REF-326 Fiori · REF-321</span></li>
+  <li><b>행 컴포넌트는 S1과 동일</b>: 학습 비용 0 <span class="ref">GC-4</span></li></ul>
+  <div class="try">해보기: 내 범위 처방을 선택하고 [감사 저장 후 다음]을 눌러 보세요. 항암 섹션의 행은 선택되지 않습니다.</div>`,
+ s4:`<h2>S4 긴급 큐</h2>
+  <h3>레퍼런스에서 가져온 것</h3><ul>
+  <li><b>소거형 큐</b>: 저장하면 그 건만 빠지고 바로 아래 건이 같은 자리에서 열린다 <span class="ref">REF-320 Zendesk Play</span></li>
+  <li><b>"남은 n"이 첫 지표</b> + 감사 287/300 진행 막대 <span class="ref">REF-323 · REF-221</span></li>
+  <li><b>대기 경과 시간</b> 표시, 자동 재정렬 금지 <span class="ref">REF-416 · REF-204</span></li>
+  <li><b>되돌리기 두 경로</b>: 토스트 6초 + [최근 완료]·[넘김] 칩 <span class="ref">REF-405</span></li>
+  <li><b>새 유입</b>: 목록 끝 추가 + "새" 라벨, 소리 없음 <span class="ref">N1+N2</span></li>
+  <li><b>우측 상세는 S5와 같은 헤더·행</b></li></ul>
+  <div class="try">해보기: 처방을 선택해 [감사 저장 → 다음]을 누르거나 [넘김]을 눌러 보세요. 아래 버튼으로 새 긴급 유입도 흉내 낼 수 있습니다.</div>
+  <div class="demo"><button data-sim="new">새 긴급 처방 유입</button><button data-sim="pick">처리 가능 처방 모두 선택</button></div>`
+};
+
+// ---------- 렌더 ----------
+const scaleEl=document.getElementById('devscale'), wrap=document.getElementById('devwrap'), notes=document.getElementById('notes');
+let hsLeft=0, vTop=0;
+function render(keepScroll){
+  const sc=document.getElementById('scroller'); if(keepScroll&&sc){vTop=sc.scrollTop}
+  scaleEl.innerHTML= screen==='s1'?S1():screen==='s5'?S5():S4();
+  notes.innerHTML=NOTES[screen];
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.s===screen));
+  const s2=document.getElementById('scroller'); if(s2){s2.scrollTop=keepScroll?vTop:0}
+  document.querySelectorAll('[data-hs]').forEach(h=>{h.scrollLeft=hsLeft;h.addEventListener('scroll',()=>{hsLeft=h.scrollLeft;document.querySelectorAll('[data-hs]').forEach(o=>{if(o!==h&&o.scrollLeft!==hsLeft)o.scrollLeft=hsLeft})},{passive:true})});
+  fit();
+}
+function fit(){const dev=scaleEl.firstElementChild;if(!dev)return;const w=dev.offsetWidth+20,h=dev.offsetHeight+20;const s=Math.min(1,wrap.clientWidth/w, (screen==='s4'?1:Math.max(.42,(window.innerHeight-120)/h)));
+  scaleEl.style.transform=`translate(10px,10px) scale(${s})`;wrap.style.height=(h*s+10)+'px'}
+window.addEventListener('resize',fit);
+
+function showToast(msg,undo){toast=msg;undoFn=undo||null;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{toast=null;undoFn=null;render(true)},6000)}
+function scopeRows(){return screen==='s1'?allRows():screen==='s5'?patients.find(p=>p.id===s5pid).rows:(queue[qState.cur]?queue[qState.cur].rows:[])}
+function doAudit(includeDc){
+  const rows=scopeRows().filter(r=>sel.has(r.id)&&(includeDc||r.od!=='dc'));
+  const snap=rows.map(r=>({r,wf:r.wf,who:r.who}));
+  rows.forEach(r=>{r.prev=r.wf;r.wf='audit';r.who=`${ME} ${now()}`});
+  rows.forEach(r=>sel.delete(r.id)); dialog=null;
+  if(screen==='s4'){const q=queue[qState.cur];const allDone=q.rows.filter(selectable).every(r=>r.wf==='audit');
+    if(allDone){const idx=qState.cur;queue.splice(idx,1);qState.done++;qState.recent.unshift(q);if(qState.cur>=queue.length)qState.cur=Math.max(0,queue.length-1);
+      showToast(`${q.t} ${q.name} 감사 저장`,()=>{queue.splice(idx,0,q);qState.done--;qState.recent.shift();qState.cur=idx;snap.forEach(x=>{x.r.wf=x.wf;x.r.who=x.who});toast=null;undoFn=null;render(true)});render(true);return}}
+  showToast(`${rows.length}건 감사 저장 · ${ME} ${now()}`,()=>{snap.forEach(x=>{x.r.wf=x.wf;x.r.who=x.who});toast=null;undoFn=null;render(true)});
+  if(screen==='s5'){const i=patients.findIndex(p=>p.id===s5pid);if(i<patients.length-1){s5pid=patients[i+1].id;hsLeft=0;render(false);return}}
+  render(true)}
+function askAudit(){const rows=scopeRows().filter(r=>sel.has(r.id));const dcs=rows.filter(r=>r.od==='dc');
+  if(!dcs.length){doAudit(true);return}
+  dialog=`<div class="scrim"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-t"><h4 id="dlg-t">D/C 처방 ${dcs.length}건이 포함돼 있습니다</h4>
+   <p>선택한 ${rows.length}건 중 D/C 처방이 있습니다. D/C 처방은 조제하지 않는 것이 원칙입니다.</p>
+   <div class="rows">${dcs.map(r=>`<b>D</b> ${r.name} · ${r.dose} · ${r.sig}`).join('<br>')}</div>
+   <div class="acts"><button class="btn" data-dlg="cancel">취소</button><button class="btn" data-dlg="incl">포함해 저장</button><button class="btn audit" data-dlg="excl">D/C 빼고 ${rows.length-dcs.length}건 저장</button></div></div></div>`;render(true)}
+
+document.addEventListener('click',e=>{const t=e.target.closest('[data-s],[data-ck],[data-all],[data-audit],[data-undo-save],[data-toast-undo],[data-dlg],[data-rx],[data-go],[data-pp],[data-qi],[data-skip],[data-sim]');if(!t)return;
+  if(t.dataset.s||t.dataset.go||t.dataset.rx){toast=null;undoFn=null;clearTimeout(toastTimer)}
+  if(t.dataset.s){screen=t.dataset.s;sel.clear();dialog=null;hsLeft=0;render(false);return}
+  if(t.dataset.ck){const id=t.dataset.ck;sel.has(id)?sel.delete(id):sel.add(id);render(true);return}
+  if(t.dataset.all){const act=scopeRows().filter(actionable);const on=act.every(r=>sel.has(r.id));act.forEach(r=>on?sel.delete(r.id):sel.add(r.id));render(true);return}
+  if(t.dataset.audit){askAudit();return}
+  if(t.dataset.dlg){if(t.dataset.dlg==='cancel'){dialog=null;render(true)}else doAudit(t.dataset.dlg==='incl');return}
+  if(t.dataset.toastUndo){undoFn&&undoFn();return}
+  if(t.dataset.undoSave){const rows=scopeRows().filter(r=>sel.has(r.id)&&r.wf==='audit'&&!r.post);rows.forEach(r=>{r.wf=r.prev&&r.prev!=='audit'?r.prev:'review';r.who=r.wf==='review'?'이약사':''});rows.forEach(r=>sel.delete(r.id));showToast(`${rows.length}건 감사 취소 · 이력은 보존됩니다`);render(true);return}
+  if(t.dataset.rx){s5pid=t.dataset.rx;screen='s5';sel.clear();hsLeft=0;render(false);return}
+  if(t.dataset.go){screen=t.dataset.go;sel.clear();dialog=null;hsLeft=0;render(false);return}
+  if(t.dataset.pp){const i=patients.findIndex(p=>p.id===s5pid)+Number(t.dataset.pp);if(patients[i]){s5pid=patients[i].id;sel.clear();render(false)}return}
+  if(t.dataset.qi){qState.cur=Number(t.dataset.qi);sel.clear();render(true);return}
+  if(t.dataset.skip){const q=queue[qState.cur];if(!q)return;qState.skipped.push(q);showToast(`${q.name} 넘김 · [넘김] 칩에서 다시 열 수 있습니다`);qState.cur=Math.min(qState.cur+1,queue.length-1);sel.clear();render(true);return}
+  if(t.dataset.sim==='new'){const i=queue.length+qState.done;const q={id:'qn'+i,t:now(),ward:'EICU',name:'남궁별',reg:'2455'+String(9000+i),age:0,isNew:true,rows:[R('NTG1','Nitroglycerin 0.6 mg','1 tab',1,'SL','1 tab',{recv:'긴급'})]};q.rows.forEach(r=>{r.id='r'+(++uid);r.pid=q.id});queue.push(q);qState.total++;showToast('새 긴급 처방 1건이 목록 끝에 추가됐습니다');render(true);return}
+  if(t.dataset.sim==='pick'){scopeRows().filter(actionable).forEach(r=>sel.add(r.id));render(true);return}
+});
+document.addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&e.target.matches('[data-ck],[data-all]')){e.preventDefault();e.target.click()}});
+render(false);
+})();
+</script>
