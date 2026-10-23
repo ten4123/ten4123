@@ -156,7 +156,9 @@ a{color:var(--accent)}
       <div class="src"><span class="eyebrow">M3-a · 국내</span><span class="big num">22</span><p>토스 15, 당근 3, LINE/LY 2, 배민 1, 개인 1</p><div class="tags"><span class="tag">원칙</span><span class="tag">가설</span><span class="tag">정성 검증</span></div></div>
       <div class="src"><span class="eyebrow">M3-b · B2B·임상</span><span class="big num">22</span><p>Epic, Bloomberg, Abridge, NN/g, Carbon, 약제 연구</p><div class="tags"><span class="tag">관찰</span><span class="tag">테이블</span><span class="tag">경고 피로</span></div></div>
       <div class="src"><span class="eyebrow">M3-b · 상태 색</span><span class="big num">13</span><p>Carbon, Fiori, Atlassian, Polaris, ISMP, Okabe-Ito</p><div class="tags"><span class="tag">패턴</span><span class="tag">근거</span><span class="tag">접근성</span></div></div>
-      <div class="src pending"><span class="eyebrow">웨이브 A · 수집 중</span><span class="big num">3</span><p>고밀도 업무 UI 크래프트, 약사 검증 화면 사례, 화면별 비주얼(S1~S7)</p><div class="tags"><span class="tag">S1</span><span class="tag">S5</span><span class="tag">S4</span></div></div>
+      <div class="src"><span class="eyebrow">웨이브 A · 고밀도 UI</span><span class="big num">17</span><p>Primer, Polaris, Carbon, Vercel 가이드라인, Rauno. 원문 확인 7건</p><div class="tags"><span class="tag">숫자 정렬</span><span class="tag">행 높이</span><span class="tag">빈 상태</span></div></div>
+      <div class="src"><span class="eyebrow">웨이브 A · 약제 화면</span><span class="big num">25</span><p>Epic Willow, Cerner PharmNet, Abacus, BD Cato, NHS CUI, ISMP</p><div class="tags"><span class="tag">검증 큐</span><span class="tag">용량 표기</span><span class="tag">미저장 표지</span></div></div>
+      <div class="src"><span class="eyebrow">웨이브 A · 화면별 비주얼</span><span class="big num">37</span><p>Fiori, Spectrum, Zendesk, Toast POS, Epic Rover. 화면당 4~7개</p><div class="tags"><span class="tag">S1~S7</span><span class="tag">충돌 5건</span></div></div>
     </div>
   </section>
 
@@ -233,6 +235,29 @@ a{color:var(--accent)}
   </section>
 
   <section>
+    <div class="lab"><span class="eyebrow">05+</span><h2>화면별 가장 강한 레퍼런스</h2><p class="muted">웨이브 A 수집 결과, 정리 전</p></div>
+    <div class="stages">
+      <div class="stage"><h3><span class="num">S1</span>처방 목록</h3><ul>
+        <li>스티키 헤더와 첫 열, 고정 열은 화면의 30% 이하 <span>SAP Fiori</span></li>
+        <li>숫자 열은 고정폭 숫자 + 오른쪽 정렬 <span>Primer, Polaris</span></li>
+        <li>용량 표기: 후행 0 제거, 선행 0, 숫자와 단위 사이 공백 <span>ISMP, ACSQHC</span></li>
+        <li>환자 헤더 체크로 처리 가능한 처방만 일괄 선택 <span>Polaris 그룹 행</span></li></ul></div>
+      <div class="stage"><h3><span class="num">S5</span>처방전 뷰</h3><ul>
+        <li>이전/다음 + 저장하고 다음 <span>SAP Fiori</span></li>
+        <li>좌측 환자 패널에 판단 정보 고정 <span>Epic Storyboard</span></li>
+        <li>환자 배너 표준 배치 <span>NHS CUI</span></li></ul></div>
+      <div class="stage"><h3><span class="num">S4</span>긴급 큐</h3><ul>
+        <li>제출하면 다음 건, 다른 사람이 보는 건은 건너뜀 <span>Zendesk Play</span></li>
+        <li>좌측 선택 행과 우측 상세의 환자 식별 형식 통일 <span>약제 화면 조사</span></li>
+        <li>긴급 진입점 배지, 미분류 버킷 <span>Epic Willow, PharmNet</span></li></ul></div>
+      <div class="stage"><h3><span class="num">S3</span>조작 영역</h3><ul>
+        <li>하단 배치, 선택 수 필수, 액션 5개 이하 <span>Adobe Spectrum</span></li>
+        <li>미저장 선택 표지와 이탈 확인 <span>약제 화면 공통</span></li>
+        <li>저장 결과는 토스트 1개 + 되돌리기 <span>Vercel, Primer</span></li></ul></div>
+    </div>
+  </section>
+
+  <section>
     <div class="lab"><span class="eyebrow">06</span><h2>리서치가 화면이 된 예</h2><p class="muted">상태 색 위계 R1을 S1 처방 목록에 적용한 미리보기</p></div>
     <div style="display:grid;gap:14px;min-width:0">
       <div class="scroll"><div class="mock" style="min-width:560px">
@@ -262,8 +287,8 @@ a{color:var(--accent)}
   <section>
     <div class="lab"><span class="eyebrow">07</span><h2>다음 웨이브</h2><p class="muted">에이전트 병렬 실행 계획</p></div>
     <div class="plan">
-      <div class="step"><span class="w">A</span><span>레퍼런스 수집: 고밀도 UI 크래프트 · 약사 검증 화면 · 화면별 비주얼 (병렬)</span><span class="st run">진행 중</span></div>
-      <div class="step"><span class="w">B</span><span>큐레이션과 감사: S1·S5·S4 중심으로 채택·보류·기각</span><span class="st">대기</span></div>
+      <div class="step"><span class="w">A</span><span>레퍼런스 수집: 고밀도 UI 크래프트 · 약사 검증 화면 · 화면별 비주얼 (병렬)</span><span class="st">완료 · 79건</span></div>
+      <div class="step"><span class="w">B</span><span>큐레이션과 감사: S1·S5·S4 중심으로 채택·보류·기각</span><span class="st run">진행 중</span></div>
       <div class="step"><span class="w">C</span><span>화면별 발산: S1 목록 / S5 처방전 뷰 / S4 긴급 큐 (병렬)</span><span class="st">대기</span></div>
       <div class="step"><span class="w">D</span><span>평가: 제품 원칙 + 속도·안전·판단</span><span class="st">대기</span></div>
       <div class="step"><span class="w">E</span><span>스펙과 HTML 시안: S1·S5·S4</span><span class="st">대기</span></div>
