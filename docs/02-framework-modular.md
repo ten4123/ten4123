@@ -102,6 +102,6 @@ cost: "가져오면 늘어나는 것(기능·정보·학습 비용)"
 ## 7. 다음 단계
 
 - [x] SNS 작업기 조사 결과로 각 모듈의 "기법" 목록 보강 (v0.2)
-- [ ] 모듈 범위와 모드 구성 사용자 확인
-- [ ] 각 모듈을 Claude Code 서브에이전트(`.claude/agents/*.md`)로 구현
+- [x] 모듈 범위와 모드 구성 사용자 확인
+- [x] 각 모듈을 Claude Code 서브에이전트(`.claude/agents/design-*.md`)로 구현, M0은 스킬(`.claude/skills/design-coach`)
 - [ ] ePRIS 프로젝트로 "와이어프레임 디벨롭 모드" 첫 실행 (M1부터)
