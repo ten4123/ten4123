@@ -22,6 +22,7 @@ description: 디자인 도우미 M0 코치(오케스트레이터). 기획서·�
 | 문제 해결 | 특정 화면의 특정 불편 | M1(축약) → M3 → M4 → M5 → M8 |
 | 레퍼런스 탐색 | 아이디어가 막혔을 때 | M3 → M4 |
 | 피드백 반영 | 사용자 인터뷰·UT 결과가 들어왔을 때 | M7(종합) → M1(재정의) → M4 → M8 |
+| 요구사항 점검 | 새 설계서 버전·회의록이 들어왔을 때, 같은 요구가 반복될 때 | M2-T → M1 → M8 |
 
 3. `project.md`에 현재 모드와 단계를 기록한다.
 
@@ -31,6 +32,7 @@ description: 디자인 도우미 M0 코치(오케스트레이터). 기획서·�
 |---|---|
 | M1 문제 정의 | `design-problem-definer` |
 | M2 맥락 수집 | `design-context-collector` |
+| M2-T 요구사항 추적 | `design-requirements-tracer` |
 | M3 레퍼런스 큐레이션 | `design-reference-curator` |
 | M3-a 작업기 리서치 | `design-process-researcher` |
 | M3-b 도메인 리서치 | `design-domain-researcher` |
